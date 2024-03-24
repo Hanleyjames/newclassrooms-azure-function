@@ -1,7 +1,7 @@
 const { app } = require('@azure/functions');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const fs = require('fs');
-const path = require('path');
+//const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 app.http('newclassrooms', {
@@ -46,24 +46,43 @@ app.http('newclassrooms', {
         var blobUrl = "tst";
         switch(acceptValue){
             case 'application/json':
-                context.log(`application/json`);
-                outputData = convertArrayToJson(formattedData);
-                //blobUrl = await sendFileToBlobContainer(writeStringToFile(JSON.stringify(outputData), 'json'));
+                try{
+                    context.log(`application/json`);
+                    outputData = convertArrayToJson(formattedData);
+                    context.log(`converted data`);
+                    const filePath = writeStringToFile(JSON.stringify(outputData), 'json', context);
+                    blobUrl = await sendFileToBlobContainer(filePath, context);
+                }
+                catch(err){ context.log(err); }
                 break;
             case 'text/plain':
-                context.log(`text/plain`);
-                outputData = convertArrayToStringWithNewLines(formattedData);
-                //blobUrl = await sendFileToBlobContainer(writeStringToFile(outputData, 'txt'));
+                try{
+                    context.log(`text/plain`);
+                    outputData = convertArrayToStringWithNewLines(formattedData);
+                    const filePath = writeStringToFile(outputData, 'txt', context);
+                    blobUrl = await sendFileToBlobContainer(filePath, context);
+                }
+                catch(err){ context.log(err); }
                 break;
             case 'application/xml':
-                context.log(`application/xml`);
-                outputData = '<?xml version="1.0" encoding="UTF-8"?>'+'<newclassrooms>'+OBJtoXML(convertArrayToJson(formattedData))+"</newclassrooms>";
-                //blobUrl = await sendFileToBlobContainer(writeStringToFile(outputData, 'xml'));
+                try{
+                    context.log(`application/xml`);
+                    outputData = '<?xml version="1.0" encoding="UTF-8"?>'+'<newclassrooms>'+OBJtoXML(convertArrayToJson(formattedData))+"</newclassrooms>";
+                    const filePath = writeStringToFile(outputData, 'xml', context);
+                    blobUrl = await sendFileToBlobContainer(filePath, context);
+                }
+                catch(err){ context.log(err); }
+                
                 break;
             default:
-                context.log(`default`);
-                outputData = convertArrayToJson(formattedData);
-                //blobUrl = await sendFileToBlobContainer(writeStringToFile(JSON.stringify(outputData), 'json'));
+                try{
+                    context.log(`application/json`);
+                    outputData = convertArrayToJson(formattedData);
+                    context.log(`converted data`);
+                    const filePath = writeStringToFile(JSON.stringify(outputData), 'json', context);
+                    blobUrl = await sendFileToBlobContainer(filePath, context);
+                }
+                catch(err){ context.log(err); }
                 break;
         }
 
@@ -173,21 +192,21 @@ function isFirstCharacterBetweenAM(str) {
  * @returns {string[]} - An array of formatted strings.
  */
 function dictFormatter(dict){
-    const genderDifference = `There is a ${dict.gender} difference between genders in the dataset.`;
-    const firstNameDifference = `Out of ${dict.count} people, ${dict.firstName} have first names that start with a letter between A-M.`;
-    const lastNameDifference = `Out of ${dict.count} people, ${dict.lastName} have last names that start with a letter between A-M.`;
-    const firstNameDifferenceMale = `Out of ${dict.count} men, ${dict.firstNameMale} have last names that start with a letter between A-M.`;
-    const lastNameDifferenceMale = `Out of ${dict.count} men, ${dict.lastNameMale} have last names that start with a letter between A-M.`;
-    const firstNameDifferenceFemale = `Out of ${dict.count} women, ${dict.firstNameFemale} have last names that start with a letter between A-M.`;
-    const lastNameDifferenceFemale = `Out of ${dict.count} women, ${dict.lastNameFemale} have last names that start with a letter between A-M.`;
+    const genderDifference = `There is a ${dict.gender}% difference between genders in the dataset.`;
+    const firstNameDifference = `Out of ${dict.count} people, ${dict.firstName}% have first names that start with a letter between A-M.`;
+    const lastNameDifference = `Out of ${dict.count} people, ${dict.lastName}% have last names that start with a letter between A-M.`;
+    const firstNameDifferenceMale = `Out of ${dict.count} men, ${dict.firstNameMale}% have last names that start with a letter between A-M.`;
+    const lastNameDifferenceMale = `Out of ${dict.count} men, ${dict.lastNameMale}% have last names that start with a letter between A-M.`;
+    const firstNameDifferenceFemale = `Out of ${dict.count} women, ${dict.firstNameFemale}% have last names that start with a letter between A-M.`;
+    const lastNameDifferenceFemale = `Out of ${dict.count} women, ${dict.lastNameFemale}% have last names that start with a letter between A-M.`;
     const states = `The top 10 states with the most people are: ${dict.states.map(state => state[0]).join(', ')}`;
     const statesMale = `The top 10 states with the most men are: ${dict.maleStates.map(state => state[0]).join(', ')}`;
     const statesFemale = `The top 10 states with the most women are: ${dict.femaleStates.map(state => state[0]).join(', ')}`;
-    const ageRanges = `The percentage of people in the following age ranges are: 0-20: ${dict.ageRanges[0]}, 21-40: ${dict.ageRanges[1]}, `+
+    const ageRanges = `The amount of people in the following age ranges are: 0-20: ${dict.ageRanges[0]}, 21-40: ${dict.ageRanges[1]}, `+
     `41-60: ${dict.ageRanges[2]}, 61-80: ${dict.ageRanges[3]}, 81-100: ${dict.ageRanges[4]}, 100+: ${dict.ageRanges[5]}`;
-    const ageRangesMale = `The percentage of men in the following age ranges are: 0-20: ${dict.ageRangesMale[0]}, 21-40: ${dict.ageRangesMale[1]},`+
+    const ageRangesMale = `The amount of men in the following age ranges are: 0-20: ${dict.ageRangesMale[0]}, 21-40: ${dict.ageRangesMale[1]},`+
     ` 41-60: ${dict.ageRangesMale[2]}, 61-80: ${dict.ageRangesMale[3]}, 81-100: ${dict.ageRangesMale[4]}, 100+: ${dict.ageRangesMale[5]}`;
-    const ageRangesFemale = `The percentage of women in the following age ranges are: 0-20: ${dict.ageRangesFemale[0]}, 21-40: ${dict.ageRangesFemale[1]}, `+
+    const ageRangesFemale = `The amount of women in the following age ranges are: 0-20: ${dict.ageRangesFemale[0]}, 21-40: ${dict.ageRangesFemale[1]}, `+
     `41-60: ${dict.ageRangesFemale[2]}, 61-80: ${dict.ageRangesFemale[3]}, 81-100: ${dict.ageRangesFemale[4]}, 100+: ${dict.ageRangesFemale[5]}`;
     
     return [genderDifference, firstNameDifference, lastNameDifference, firstNameDifferenceMale, lastNameDifferenceMale, firstNameDifferenceFemale, 
@@ -263,11 +282,17 @@ function OBJtoXML(obj) {
  * @param {string} filetype - The file type (e.g., 'txt', 'json', 'csv').
  * @returns {string} The file path of the created file.
  */
-function writeStringToFile(contents, filetype) {
-    const filePath = path.join('d:', 'local', 'temp', `${uuidv4()}.${filetype}`);
-    
-    fs.writeFileSync(filePath, contents);
-    return filePath;
+function writeStringToFile(contents, filetype, context) {
+    try{
+        context.log(`Writing to file: ${contents}`);
+        const filePath = `D:/local/Temp/${uuidv4()}.${filetype}`;
+        context.log(`File path: ${filePath}`);
+        fs.writeFileSync(filePath, contents);
+        return filePath;
+    }
+    catch(err){
+        context.log(err);
+    }
 }
 
 /**
@@ -275,18 +300,24 @@ function writeStringToFile(contents, filetype) {
  * @param {string} filePath - The path of the file to be uploaded.
  * @returns {Promise<string>} The URL of the uploaded blob.
  */
-async function sendFileToBlobContainer(filePath) {
+async function sendFileToBlobContainer(filePath, context) {
+    context.log(`Uploading file to blob storage: ${filePath}`);
     const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
     const containerName = 'newclassrooms';
-
-    const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-
-    const fileName = path.basename(filePath);
-    const blockBlobClient = containerClient.getBlockBlobClient(fileName);
-
-    await blockBlobClient.uploadFile(filePath);
-
-    const blobUrl = blockBlobClient.url;
-    return blobUrl;
+    context.log(`Connection string: ${connectionString} & container name: ${containerName}`);
+    try{
+        const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+        const containerClient = blobServiceClient.getContainerClient(containerName);
+    
+        //const fileName = path.basename(filePath);
+        const blockBlobClient = containerClient.getBlockBlobClient(filePath);
+    
+        await blockBlobClient.uploadFile(filePath);
+        const blobUrl = blockBlobClient.url;
+        return blobUrl;
+    }
+    catch(err){
+        context.log(err);
+    }
+    
 }
