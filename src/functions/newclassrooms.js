@@ -57,7 +57,7 @@ app.http('newclassrooms', {
                 break;
             case 'application/xml':
                 context.log(`application/xml`);
-                outputData = OBJtoXML(convertArrayToJson(formattedData));
+                outputData = '<?xml version="1.0" encoding="UTF-8"?>'+'<newclassrooms>'+OBJtoXML(convertArrayToJson(formattedData))+"</newclassrooms>";
                 //blobUrl = await sendFileToBlobContainer(writeStringToFile(outputData, 'xml'));
                 break;
             default:
