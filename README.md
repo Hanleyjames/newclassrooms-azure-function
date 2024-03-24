@@ -6,9 +6,7 @@ Software Engineer Trial Project
 
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Testing](#testing)
 
 ## Requirements
 
@@ -26,4 +24,7 @@ When delivering your project, we ask that you deploy it to a hosting environment
 
 ## Installation
 
-Use the package manager [npm](https://www.npmjs.com/) to install foobar.
+Use `npm run start`
+
+## Testing
+
