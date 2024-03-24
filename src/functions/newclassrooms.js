@@ -192,13 +192,13 @@ function isFirstCharacterBetweenAM(str) {
  * @returns {string[]} - An array of formatted strings.
  */
 function dictFormatter(dict){
-    const genderDifference = `There is a ${dict.gender}% difference between genders in the dataset.`;
-    const firstNameDifference = `Out of ${dict.count} people, ${dict.firstName}% have first names that start with a letter between A-M.`;
-    const lastNameDifference = `Out of ${dict.count} people, ${dict.lastName}% have last names that start with a letter between A-M.`;
-    const firstNameDifferenceMale = `Out of ${dict.count} men, ${dict.firstNameMale}% have last names that start with a letter between A-M.`;
-    const lastNameDifferenceMale = `Out of ${dict.count} men, ${dict.lastNameMale}% have last names that start with a letter between A-M.`;
-    const firstNameDifferenceFemale = `Out of ${dict.count} women, ${dict.firstNameFemale}% have last names that start with a letter between A-M.`;
-    const lastNameDifferenceFemale = `Out of ${dict.count} women, ${dict.lastNameFemale}% have last names that start with a letter between A-M.`;
+    const genderDifference = `There is a ${dict.gender.toFixed(2)}% difference between genders in the dataset.`;
+    const firstNameDifference = `Out of ${dict.count} people, ${dict.firstName.toFixed(2)}% have first names that start with a letter between A-M.`;
+    const lastNameDifference = `Out of ${dict.count} people, ${dict.lastName.toFixed(2)}% have last names that start with a letter between A-M.`;
+    const firstNameDifferenceMale = `Out of ${dict.count} men, ${dict.firstNameMale.toFixed(2)}% have last names that start with a letter between A-M.`;
+    const lastNameDifferenceMale = `Out of ${dict.count} men, ${dict.lastNameMale.toFixed(2)}% have last names that start with a letter between A-M.`;
+    const firstNameDifferenceFemale = `Out of ${dict.count} women, ${dict.firstNameFemale.toFixed(2)}% have last names that start with a letter between A-M.`;
+    const lastNameDifferenceFemale = `Out of ${dict.count} women, ${dict.lastNameFemale.toFixed(2)}% have last names that start with a letter between A-M.`;
     const states = `The top 10 states with the most people are: ${dict.states.map(state => state[0]).join(', ')}`;
     const statesMale = `The top 10 states with the most men are: ${dict.maleStates.map(state => state[0]).join(', ')}`;
     const statesFemale = `The top 10 states with the most women are: ${dict.femaleStates.map(state => state[0]).join(', ')}`;
